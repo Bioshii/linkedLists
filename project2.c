@@ -6,18 +6,15 @@ struct data{
 	int intData;
 	double doubleData;
 	char stringData[300];
+	//struct data subData;
 	struct data *next;
 };
-
-void createArray(char arr[]) {
-
-}
 
 void initDefault(struct data **myData) {
 	(*myData)->intData = -19776;
 	(*myData)->doubleData = -19776.19;
 	(*myData)->charData = ' ';
-	strcpy((*myData)->stringData, "Hello");
+	strcpy((*myData)->stringData, " "); 
 }
 
 void display(struct data *data) {
@@ -110,6 +107,7 @@ void main() {
 	printf("Welcome to an List Simulator!\n");
 	printf("You will be able to make, modify, and destroy up to 5 lists!\n");
 
+	// LInked list of likned lists
 	int done = 0;
 	struct data heads[5];
 	struct data *head1 = malloc(sizeof(struct data)); heads[0] = (*head1);
@@ -119,6 +117,7 @@ void main() {
 	struct data *head5 = malloc(sizeof(struct data)); heads[4] = (*head5);
 
 	int size[5] = {0, 0, 0, 0, 0};
+	int amountOfList = 0;
 
 	while (!done) {
 		printf("Your current list looks like this: \n\n");
