@@ -6,7 +6,7 @@ struct data{
 	int intData;
 	double doubleData;
 	char stringData[300];
-	//struct data subData;
+	struct data *subData;
 	struct data *next;
 };
 
@@ -24,8 +24,6 @@ void display(struct data *data) {
 		printf("%d", temp->intData);
 	else if(temp->doubleData != -19776.19)
 		printf("%.2lf", temp->doubleData);
-	else if(temp->charData != ' ')
-		printf("%c", temp->charData);
 	else
 		printf("%s", temp->stringData);
 }
