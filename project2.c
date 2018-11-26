@@ -72,14 +72,25 @@ void displayList (struct node *head) {
 	}
 }
 
-void getElemAtPos(struct node *head, int pos) {
-	struct node *curr = head; 
+struct node *getNode(struct node **head, int pos) {
+	struct node *currNode = malloc(sizeof(struct node));
+	currNode = (*head);
+	for (int i = 0; i < pos; i++)
+		currNode = currNode->next;
 
+	return currNode;
+}
+
+void getElemAtPos(struct node *head, int pos) {
+	struct node *curr = getNode(&head, pos); 
+
+	/*
 	for (int i = 0; i < pos; i++) {
 		curr = curr->next;
 	}
+	*/
 
-	printf("Element at position %d is: ");
+	printf("Element at position %d is: ", pos);
 	display(curr);
 	printf("\n");
 	
@@ -150,6 +161,7 @@ void main() {
 	printf("Welcome to an List Simulator!\n");
 	printf("You will be able to make, modify, and destroy up to 5 lists!\n");
 
+
 	// LInked list of likned lists
 	int done = 0;
 
@@ -157,6 +169,16 @@ void main() {
 	headsOfLists->initialized = 1;
 	headsOfLists->dataType = is_struct;
 	headsOfLists->data.n = malloc(sizeof(struct node));
+
+	// Add a test list
+	struct node *currNode = malloc(sizeof(struct node));
+	currNode = (headsOfLists);
+
+	currNode->data.n->initialized = 1; 
+	currNode->data.n->dataType = is_double;
+	currNode->data.n->data.d = 5.7;
+	printf("Initialized?\n %d\n", currNode->data.n->initialized);
+	getElemAtPos(currNode->data.n, 0);
 
 
 
