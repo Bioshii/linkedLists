@@ -118,7 +118,19 @@ void modify(struct node *head, int pos, char value[]) {
 		strcpy(curr->data.s, value);
 }
 
-int valid()
+int validList(int userChoice, int amountOfLists) {
+	struct node *curr = head;
+	if (userChoice < 1 || userChoice > amountOfLists)
+		return 0;
+	return 1;
+}
+
+int validPosition(int userChoice, int whichList, struct node *head) {
+	struct node *listSize = getNode(&head, whichList);
+	if (userChoice < 1 || userChoice > listSize->data.i)
+		return 0;
+	return 1;
+}
 
 void main() {
 	printf("Welcome to an List Simulator!\n");
