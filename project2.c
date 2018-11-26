@@ -76,11 +76,15 @@ void insert(struct node **head, int pos, char value[]) {
 		int y = (int)i; //Cast to int		
 
 		// fabs for absolute value
-		if (fabs(d - y) / d > precision)
+		if (fabs(d - y) / d > precision) {
+			temp->dataType = is_double;
 			temp->data.d = atof(value);
-		else
+		} else {
+			temp->dataType = is_int;
 			temp->data.i = atoi(value);
+		}
 	} else
+		temp->dataType = is_string;
 		strcpy(temp->data.s, value);
 	
 
@@ -143,34 +147,27 @@ void main() {
 	printf("\nHello2\n");
 
 	// Lists of all potential lists
-	printf("\nHello3\n");
 	struct node *headsOfLists = malloc(sizeof(struct node));
 	headsOfLists->initialized = 0;
 	headsOfLists->dataType = is_struct;
-	printf("\nHello4\n");
 	
 	// Initialize first list
-	// headsOfLists->data.n = malloc(sizeof(struct node));
+	 headsOfLists->data.n = malloc(sizeof(struct node));
 
 	// Add a test 
 	struct node *currNode = malloc(sizeof(struct node));
 	currNode = (headsOfLists);
-	printf("\nHello5\n");
 
 	
-	printf("\nHello6\n");
 	currNode->data.n->initialized = 1; 
 	currNode->data.n->dataType = is_double;
 	currNode->data.n->data.d = 5.7;
-	printf("\nHello7\n");
-	printf("\nHello\n");
-	printf("\nHello\n");
 	printf("Initialized?\n %d\n", currNode->data.n->initialized);
 	getElemAtPos(currNode->data.n, 0);
-	printf("\nHello8\n");
 	insert(&currNode->data.n, 1, "4.6");
 	getElemAtPos(currNode->data.n, 1);
-	printf("\nHello9\n");
+	insert(&currNode->data.n, 2, "I hope this works!");
+	getElemAtPos(currNode->data.n, 2);
 
 	// End of test 
 
@@ -194,7 +191,7 @@ void main() {
 			for (int i = 0; i < amountOfLists ; i++) {
 				printf("List %d: ", i+1);
 				struct node *tempHead = headsOfLists;  
-				displayList(tempHead);
+				displayList(tempHead->data.n);
 				tempHead = headsOfLists->next;
 				printf("\n");
 			}
