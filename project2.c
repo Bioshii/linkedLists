@@ -3,16 +3,6 @@
 #include<string.h>
 #include<math.h>
 
-/*
-struct node {
-		int intData;
-		double doubleData;
-		char stringData[300];
-		struct data *subData;
-		struct data *next;
-};
-*/
-
 struct node {
 	int initialized;
 	enum {is_int, is_double, is_string, is_struct} dataType;
@@ -25,14 +15,6 @@ struct node {
 	struct node *next;
 };
 
-/*
-void initDefault(struct data **myData) {
-	(*myData)->intData = -19776;
-	(*myData)->doubleData = -19776.19;
-	(*myData)->subData = NULL;
-	strcpy((*myData)->stringData, " "); 
-}
-*/
 
 void display(struct node *data) {
 	struct node *temp = data;
@@ -43,16 +25,6 @@ void display(struct node *data) {
 		case is_string: printf("%s", temp->data.s); break;
 		//case is_struct: displayList(*temp); break;
 	}
-
-	/*
-	if (temp->myData )
-	else if (temp->intData != -19776)
-		printf("%d", temp->intData);
-	else if(temp->doubleData != -19776.19)
-		printf("%.2lf", temp->doubleData);
-	else
-		printf("%s", temp->stringData);
-	*/
 }
 
 void displayList (struct node *head) {
@@ -84,12 +56,6 @@ struct node *getNode(struct node **head, int pos) {
 void getElemAtPos(struct node *head, int pos) {
 	struct node *curr = getNode(&head, pos); 
 
-	/*
-	for (int i = 0; i < pos; i++) {
-		curr = curr->next;
-	}
-	*/
-
 	printf("Element at position %d is: ", pos);
 	display(curr);
 	printf("\n");
@@ -118,10 +84,7 @@ void insert(struct node **head, int pos, char value[]) {
 		strcpy(temp->data.s, value);
 	
 
-	struct node *previous = (*head); 
-	for (int i = 0; i < pos-1; i++) {
-		previous = previous->next;
-	}
+	struct node *previous = getNode(*head, pos-1); 
 
 	if (pos == 0 && (*head)->initialized != 1) {
 		(*head) = temp;
@@ -139,10 +102,8 @@ void modify(struct node *head, int pos, char value[]) {
 	int i;
 	double precision = 1e-12; // Precision for which to check for int
 
-	struct node *curr = head; 
-	for (int i = 0; i < pos; i++) {
-		curr = curr->next;
-	}
+	
+	struct node *curr = getNode(head, pos); 
 
 	// Check for integers
 	if (sscanf(value, "%lf", &d) == 1) {
@@ -157,6 +118,8 @@ void modify(struct node *head, int pos, char value[]) {
 		strcpy(curr->data.s, value);
 }
 
+int valid()
+
 void main() {
 	printf("Welcome to an List Simulator!\n");
 	printf("You will be able to make, modify, and destroy up to 5 lists!\n");
@@ -165,12 +128,15 @@ void main() {
 	// LInked list of likned lists
 	int done = 0;
 
+	// Lists of all potential lists
 	struct node *headsOfLists = malloc(sizeof(struct node));
-	headsOfLists->initialized = 1;
+	headsOfLists->initialized = 0;
 	headsOfLists->dataType = is_struct;
-	headsOfLists->data.n = malloc(sizeof(struct node));
+	// Initialize first list
+	// headsOfLists->data.n = malloc(sizeof(struct node));
 
-	// Add a test list
+	/*
+	// Add a test 
 	struct node *currNode = malloc(sizeof(struct node));
 	currNode = (headsOfLists);
 
@@ -179,16 +145,20 @@ void main() {
 	currNode->data.n->data.d = 5.7;
 	printf("Initialized?\n %d\n", currNode->data.n->initialized);
 	getElemAtPos(currNode->data.n, 0);
+	// End of test 
+	*/
 
 
 
 	
+	// Size of each list of each array
 	struct node *sizes = malloc(sizeof(struct node));
-	sizes->initialized = 1;
+	sizes->initialized = 0;
 	sizes->dataType = is_int;
 	sizes->data.i = 0;
 
 
+	// Amount of lists user has
 	int amountOfLists = 0;
 
 	while (!done) {
@@ -225,12 +195,12 @@ void main() {
 		int userChoice = 12;
 		scanf("%d", &userChoice);
 
-		int x;
+		int whichList;
 		int position;
 		switch(userChoice) {
 			case 1:
 				printf("Which list would you like to look at: ");
-				scanf("%d", x);
+				scanf("%d", whichList);
 				
 				// Conidition to make sure this list exists
 				if (x < 1 || x > 5) {
