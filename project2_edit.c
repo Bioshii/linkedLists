@@ -175,12 +175,13 @@ void main() {
 
 	while (!done) {
 
+		int whichList;
 		printf("Which list would you like to look at: ");
 		printf("24. Add a new list!\n");
 		scanf("%d", whichList);
 				
 		// Conidition to make sure this list exists
-		if (x < 1 || x > 5) {
+		if (whichList < 1 || whichList > 5) {
 			printf("Not a valid list!");
 		} else {
 
@@ -202,7 +203,6 @@ void main() {
 			int userChoice = 12;
 			scanf("%d", &userChoice);
 
-			int whichList;
 			int position;
 			switch(userChoice) {
 				case 0:
@@ -270,5 +270,6 @@ void main() {
 
 			//Change later
 			done = 1;
+		}
 	}
 }
