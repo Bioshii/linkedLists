@@ -46,7 +46,7 @@ void displayList (struct node *head) {
 			printf(", ");
 			temp = temp->next;
 		}
-		display(temp);
+		//display(temp);
 		printf("]\n");
 	} else {
 		printf("List is Empty! Add Some Items!\n");
@@ -103,10 +103,14 @@ void insert(struct node **head, int pos, char value[]) {
 
 	struct node (*previous) = getNode((head), pos-1); 
 
-	if (pos == 0 && (*head)->initialized != 1) {
+	printf("Head Init?: %d", (*head)->initialized);
+	if (pos == 0 && (*head)->initialized == 0) {
+		printf("If\n");
 		(*head) = temp;
-		temp->next = NULL;
+		temp->next = malloc(sizeof(struct node));
+		temp->next->initialized = 0;
 	} else {
+		printf("Else\n");
 		temp->next = previous->next;
 		previous->next = temp;
 	}
@@ -141,7 +145,7 @@ void modify(struct node *head, int pos, char value[]) {
 }
 
 int validList(int whichList, int amountOfLists) {
-	if (whichList < 1 || whichList > amountOfLists)
+	if (whichList < 0 || whichList > amountOfLists)
 		return 0;
 	return 1;
 }
@@ -219,8 +223,8 @@ void main() {
 	// Size of each list of each array
 	struct node *sizes = malloc(sizeof(struct node));
 	sizes->initialized = 0;
-	sizes->dataType = is_int;
-	sizes->data.i = 0;
+	sizes->next = malloc(sizeof(struct node));
+	sizes->next->initialized = 0;
 
 
 	// Amount of lists user has
@@ -228,13 +232,13 @@ void main() {
 	int amountOfLists = 0;
 
 	while (!done) {
-		printf("Your current list looks like this: \n\n");
-		if (amountOfLists != 0) {
+		printf("Your current lists look like this: \n\n");
+		if (amountOfLists > 0) {
 			struct node *tempHead = headsOfLists;  
 			for (int i = 0; i < amountOfLists ; i++) {
 				printf("List %d: ", i+1);
 				displayList(tempHead->data.n);
-				tempHead = headsOfLists->next;
+				tempHead = tempHead->next;
 				printf("\n");
 			}
 		} else {
@@ -248,6 +252,12 @@ void main() {
 			printf("Which list would you like to work with: ");
 			scanf("%d", &whichList);
 			--whichList;
+			while(!validList(whichList, amountOfLists)) {
+				printf("Not a valid list. Enter a valid one: ");
+				scanf("%d", &whichList);
+				--whichList;
+			}
+
 		} else  {
 			printf("You currently do not have any lists! Go make some!\n");
 		}
@@ -282,10 +292,12 @@ void main() {
 				fgets(value, 500, stdin);
 
 				struct node *newList = malloc(sizeof(struct node));
-				newList->next = NULL;
+				newList->initialized = 1;
+				newList->next = malloc(sizeof(struct node));
+				newList->next->initialized = 0;
 				newList->data.n = malloc(sizeof(struct node));
-				newList->data.n->initialized = 1;
 				insert(&newList->data.n, 0, value);	
+				newList->data.n->initialized = 1;
 				
 				int i = 0;
 
@@ -295,19 +307,20 @@ void main() {
 				currSize = sizes;
 
 				if (currList->initialized == 0) {
+					headsOfLists->initialized = 1;
 					headsOfLists = newList;
 					currSize->data.i = 1;
 					currSize->initialized = 1;
 					currSize->dataType = is_int;
 				} else {
-					while (currList->initialized != 0) {
+					while (currList->next->initialized != 0) {
 						currList = currList->next;
 						currSize = currSize->next;
 						++i;
 					}
+					currSize->dataType = is_int;
 					currSize->data.i = 1;
 					currSize->initialized = 1;
-					currSize->dataType = is_int;
 				}
 
 				newList->next = currList->next;
@@ -316,30 +329,25 @@ void main() {
 				printf("You have successfully created a new list! You can refer to this list as \"l%d\"\n", ++amountOfLists);
 				break;
 			case 2:
-				// Conidition to make sure this list exists
-				// if (x < 1 || x > 5)
-				if (validList(whichList-1, amountOfLists)) {
-					printf("if\n");
-					printf("Not a valid list!");
+				printf("Which position would you like to sees element: ");
+				scanf("%d", &position);
+
+				struct node *curr = headsOfLists; 
+
+				for (int i = 0; i < whichList; i++) {
+					curr = curr->next;
+				}
+				
+				struct node *thisList = curr->data.n;
+
+				printf("Hello\n");
+
+				// Check if that position has actually been occupied
+				// if (userChoice >= 5)
+				if (validPosition(position, whichList, sizes)) { // Random size for now
+					printf("Position has not been occupied yet!\n");
 				} else {
-					printf("else\n");
-					printf("Which position would you like to sees element: ");
-					scanf("%d", &position);
-
-					struct node *curr = headsOfLists; 
-
-					for (int i = 0; i < whichList; i++) {
-						curr = curr->next;
-					}
-					printf("Hello\n");
-
-					// Check if that position has actually been occupied
-					// if (userChoice >= 5)
-					if (validPosition(position, whichList, sizes)) { // Random size for now
-						printf("Position has not been occupied yet!\n");
-					} else {
-						getElemAtPos(curr, position);
-					}
+					getElemAtPos(thisList, position);
 				}
 				break;
 			case 3:
