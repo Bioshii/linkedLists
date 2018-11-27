@@ -3,6 +3,12 @@
 #include<string.h>
 #include<math.h>
 
+// A Node structure holding
+// 		An int determining if the node itself is initialized
+// 		Enum holding what dataType the value is (to check do if 
+// 			Example: (is_int), would return true if dataType is set to that
+//		Union (Variable name data), holding different data types. Can only hold 
+//
 struct node {
 	int initialized;
 	enum {is_int, is_double, is_string, is_struct} dataType;
@@ -15,6 +21,9 @@ struct node {
 	struct node *next;
 };
 
+void display(struct node *data);
+void displayList(struct node *head);
+
 
 void display(struct node *data) {
 	struct node *temp = data;
@@ -23,7 +32,7 @@ void display(struct node *data) {
 		case is_int: printf("%d", temp->data.n); break;
 		case is_double: printf("%.2f", temp->data.d); break;
 		case is_string: printf("%s", temp->data.s); break;
-		//case is_struct: displayList(*temp); break;
+		case is_struct: displayList(temp); break;
 	}
 }
 
@@ -148,7 +157,7 @@ void main() {
 
 	// Lists of all potential lists
 	struct node *headsOfLists = malloc(sizeof(struct node));
-	headsOfLists->initialized = 0;
+	headsOfLists->initialized = 1;
 	headsOfLists->dataType = is_struct;
 	
 	// Initialize first list
@@ -169,6 +178,28 @@ void main() {
 	insert(&currNode->data.n, 2, "I hope this works!");
 	getElemAtPos(currNode->data.n, 2);
 
+	printf("Hello\n");
+	struct node *newNode = malloc(sizeof(struct node));
+	headsOfLists->next = newNode;
+	newNode->initialized = 1;
+	newNode->dataType = is_struct;
+	newNode->data.n = malloc(sizeof(struct node));
+	headsOfLists->next = newNode;
+
+	printf("Hello\n");
+	newNode->data.n->initialized = 1; 
+	printf("Hello1\n");
+	newNode->data.n->dataType = is_double;
+	printf("Hello2\n");
+	newNode->data.n->data.d = 9.2;
+	printf("Hello3\n");
+	printf("Initialized?\n %d\n", newNode->data.n->initialized);
+	getElemAtPos(newNode->data.n, 0);
+	insert(&newNode->data.n, 1, "4.6");
+	getElemAtPos(newNode->data.n, 1);
+	insert(&newNode->data.n, 2, "I hope this worksfieaef!");
+	getElemAtPos(newNode->data.n, 2);
+
 	// End of test 
 
 
@@ -183,14 +214,14 @@ void main() {
 
 	// Amount of lists user has
 	// Change back to 0 later
-	int amountOfLists = 1;
+	int amountOfLists = 2;
 
 	while (!done) {
 		printf("Your current list looks like this: \n\n");
 		if (amountOfLists != 0) {
+			struct node *tempHead = headsOfLists;  
 			for (int i = 0; i < amountOfLists ; i++) {
 				printf("List %d: ", i+1);
-				struct node *tempHead = headsOfLists;  
 				displayList(tempHead->data.n);
 				tempHead = headsOfLists->next;
 				printf("\n");
