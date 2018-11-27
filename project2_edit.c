@@ -182,6 +182,7 @@ double findMaximum(struct node *head){
 	return max;
 }
 
+//psuedo
 struct node *concat(struct node *list1, struct node *list2) {
 
   /* Initialize variables */
@@ -199,6 +200,29 @@ struct node *concat(struct node *list1, struct node *list2) {
   }
   return (rList);
 }
+
+//psuedo
+struct node *reverse(struct node** head_ref) 
+{ 
+    struct node* prev   = NULL; 
+    struct node* current = *head_ref; 
+    struct node* next = NULL; 
+    while (current != NULL) 
+    { 
+        // Store next 
+        next  = current->next;   
+  
+        // Reverse current node's pointer 
+        current->next = prev;    
+  
+        // Move pointers one position ahead. 
+        prev = current; 
+        current = next; 
+    } 
+    *head_ref = prev; 
+
+    return head_ref;
+} 
 
 
 void main() {
@@ -319,7 +343,7 @@ void main() {
 				// Conidition to make sure this list exists
 				// if (x < 1 || x > 5)
 				if (validList(whichList, amountOfLists)) {
-					printf("Not a valid list!");
+					printf("Not a valid list!\n");
 				} else {
 					printf("Which position would you like to sees element: ");
 					scanf("%d", &position);
@@ -401,6 +425,9 @@ void main() {
 					displayList(concat(first, second )->data.n);
 				}
 				//concat(whichList, secondList);
+				break;
+			case 10:
+				displayList(reverse(&newNode)->data.n);
 				break;
 			default:
 				done = 1;
