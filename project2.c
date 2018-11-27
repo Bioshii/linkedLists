@@ -1,3 +1,10 @@
+/* Group
+ * 	Name 1: Bio (Malik) Owens
+ * 	Name 2: Chandler Matthews
+ *	Date: 11/26/2018
+*/
+
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -402,6 +409,7 @@ void main() {
 				free(curr);
 				printf("Deleted!\n");
 				break;
+			/*
 			case 8:
 				curr = getNode((&headsOfLists), whichList); 
 				thisList = curr->data.n;
@@ -450,6 +458,7 @@ void main() {
 					//concat(whichList, secondList);
 				}
 				break;
+				*/
 			default:
 				done = 1;
 				
