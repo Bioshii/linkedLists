@@ -200,6 +200,10 @@ void main() {
 		}
 		
 		printf("\n");
+		
+		int whichList;
+		printf("Which list would you like to work with: ");
+		scanf("%d\n", &whichList);
 
 		printf("What would you like to do?\n");
 		printf("24. Add a new list!\n");
@@ -219,13 +223,11 @@ void main() {
 		int userChoice = 12;
 		scanf("%d", &userChoice);
 
-		int whichList;
 		int position;
+		int secondList;
+		int concatOpt;
 		switch(userChoice) {
 			case 1:
-				printf("Which list would you like to look at: ");
-				scanf("%d", &whichList);
-				
 				// Conidition to make sure this list exists
 				// if (x < 1 || x > 5)
 				if (validList(whichList, amountOfLists)) {
@@ -250,7 +252,6 @@ void main() {
 				break;
 			case 2:
 				/*
-				printf("Which list would you like to look at: ");
 				scanf("%d", whichList);
 				
 				if (x < 1 || x > 5) {
@@ -279,6 +280,18 @@ void main() {
 				}
 				break;
 				*/
+			case 9:
+				printf("What list would you like to combine the current one with: ");
+				scanf("%d", &secondList);
+
+				printf("Which list would you like to go first: ");
+				scanf("%d", &concatOpt);
+
+				if (concatOpt == secondList) {
+					//concat(secondList, whichList);
+				} else {
+					//concat(whichList, secondList);
+				}
 			default:
 				done = 1;
 		}
