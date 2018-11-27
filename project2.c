@@ -41,7 +41,7 @@ void displayList (struct node *head) {
 
 	if (temp->initialized) {
 		printf("[");
-		while (temp->next != NULL) {
+		while (temp->initialized) {
 			display(temp);
 			printf(", ");
 			temp = temp->next;
@@ -82,19 +82,23 @@ void insert(struct node **head, int pos, char value[]) {
 	
 	// Check for integers
 	if (sscanf(value, "%lf", &d) == 1) {
-		int y = (int)i; //Cast to int		
+		int i = (int)d; //Cast to int		
 
 		// fabs for absolute value
-		if (fabs(d - y) / d > precision) {
+		if (fabs(d - i) / d > precision) {
 			temp->dataType = is_double;
 			temp->data.d = atof(value);
 		} else {
 			temp->dataType = is_int;
 			temp->data.i = atoi(value);
 		}
-	} else
+	} else {
+		int ln = strlen(value) - 1;
+		if(value[ln] == '\n')
+			value[ln] = '\0';
 		temp->dataType = is_string;
 		strcpy(temp->data.s, value);
+	}
 	
 
 	struct node (*previous) = getNode((head), pos-1); 
@@ -127,8 +131,13 @@ void modify(struct node *head, int pos, char value[]) {
 			curr->data.d = atof(value);
 		else
 			curr->data.i = atoi(value);
-	} else
+	} else {
+		int ln = strlen(value) - 1;
+		if(value[ln] == '\n')
+			value[ln] = '\0';
 		strcpy(curr->data.s, value);
+	}
+		
 }
 
 int validList(int whichList, int amountOfLists) {
@@ -151,18 +160,20 @@ void main() {
 
 	// LInked list of likned lists
 	
-	printf("\nHello\n");
 	int done = 0;
-	printf("\nHello2\n");
 
 	// Lists of all potential lists
 	struct node *headsOfLists = malloc(sizeof(struct node));
-	headsOfLists->initialized = 1;
-	headsOfLists->dataType = is_struct;
+	headsOfLists->initialized = 0;
+	headsOfLists->next = malloc(sizeof(struct node));
+	headsOfLists->next->initialized = 0;
+
+	//headsOfLists->dataType = is_struct;
 	
 	// Initialize first list
-	 headsOfLists->data.n = malloc(sizeof(struct node));
+	// headsOfLists->data.n = malloc(sizeof(struct node));
 
+	 /*
 	// Add a test 
 	struct node *currNode = malloc(sizeof(struct node));
 	currNode = (headsOfLists);
@@ -201,7 +212,7 @@ void main() {
 	getElemAtPos(newNode->data.n, 2);
 
 	// End of test 
-
+	*/
 
 
 	
@@ -214,7 +225,7 @@ void main() {
 
 	// Amount of lists user has
 	// Change back to 0 later
-	int amountOfLists = 2;
+	int amountOfLists = 0;
 
 	while (!done) {
 		printf("Your current list looks like this: \n\n");
@@ -232,45 +243,95 @@ void main() {
 		
 		printf("\n");
 		
-		int whichList;
-		printf("Which list would you like to work with: ");
-		scanf("%d\n", &whichList);
+		int whichList = 1;
+		if (amountOfLists > 0) {
+			printf("Which list would you like to work with: ");
+			scanf("%d", &whichList);
+			--whichList;
+		} else  {
+			printf("You currently do not have any lists! Go make some!\n");
+		}
 
 		printf("What would you like to do?\n");
-		printf("24. Add a new list!\n");
-		printf("1. Select an element from the list?\n");
-		printf("2. Modify an element in the list?\n");
-		printf("3. Append an element to the end of the list?\n");
-		printf("4. Get the length of the list?\n");
-		printf("5. Insert at a specific position in the list?\n");
-		printf("6. Delete a list?\n");
-		printf("7. Find the minimum value?\n");
-		printf("8. Find the maximum value?\n");
-		printf("9. Combine 2 lists?\n");
-		printf("10. Reverse the items in the list?\n");
-		printf("11. Sort the list?\n");
-		printf("12. Exit\n");
+		printf("1. Add a new list!\n");
+		printf("2. Select an element from the list?\n");
+		printf("3. Modify an element in the list?\n");
+		printf("4. Append an element to the end of the list?\n");
+		printf("5. Get the length of the list?\n");
+		printf("6. Insert at a specific position in the list?\n");
+		printf("7. Delete a list?\n");
+		printf("8. Find the minimum value?\n");
+		printf("9. Find the maximum value?\n");
+		printf("10. Combine 2 lists?\n");
+		printf("11. Reverse the items in the list?\n");
+		printf("12. Sort the list?\n");
+		printf("13. Exit\n");
 
-		int userChoice = 12;
+		int userChoice = 13;
 		scanf("%d", &userChoice);
 
 		int position;
 		int secondList;
 		int concatOpt;
+		char value[500];
+
 		switch(userChoice) {
 			case 1:
+				while (getchar() != '\n');
+				printf("To create a new list, you have to provide data for the first element: ");
+				fgets(value, 500, stdin);
+
+				struct node *newList = malloc(sizeof(struct node));
+				newList->next = NULL;
+				newList->data.n = malloc(sizeof(struct node));
+				newList->data.n->initialized = 1;
+				insert(&newList->data.n, 0, value);	
+				
+				int i = 0;
+
+				struct node *currList = malloc(sizeof(struct node));
+				struct node *currSize = malloc(sizeof(struct node));
+				currList = headsOfLists;
+				currSize = sizes;
+
+				if (currList->initialized == 0) {
+					headsOfLists = newList;
+					currSize->data.i = 1;
+					currSize->initialized = 1;
+					currSize->dataType = is_int;
+				} else {
+					while (currList->initialized != 0) {
+						currList = currList->next;
+						currSize = currSize->next;
+						++i;
+					}
+					currSize->data.i = 1;
+					currSize->initialized = 1;
+					currSize->dataType = is_int;
+				}
+
+				newList->next = currList->next;
+				currList->next = newList;
+
+				printf("You have successfully created a new list! You can refer to this list as \"l%d\"\n", ++amountOfLists);
+				break;
+			case 2:
 				// Conidition to make sure this list exists
 				// if (x < 1 || x > 5)
-				if (validList(whichList, amountOfLists)) {
+				if (validList(whichList-1, amountOfLists)) {
+					printf("if\n");
 					printf("Not a valid list!");
 				} else {
+					printf("else\n");
 					printf("Which position would you like to sees element: ");
 					scanf("%d", &position);
 
 					struct node *curr = headsOfLists; 
-					for (int i = 0; i < position; i++) {
+
+					for (int i = 0; i < whichList; i++) {
 						curr = curr->next;
 					}
+					printf("Hello\n");
 
 					// Check if that position has actually been occupied
 					// if (userChoice >= 5)
@@ -281,7 +342,7 @@ void main() {
 					}
 				}
 				break;
-			case 2:
+			case 3:
 				/*
 				scanf("%d", whichList);
 				
@@ -309,8 +370,8 @@ void main() {
 						modify(curr, position, value);
 					}
 				}
-				break;
 				*/
+				break;
 			case 9:
 				printf("What list would you like to combine the current one with: ");
 				scanf("%d", &secondList);
@@ -323,13 +384,12 @@ void main() {
 				} else {
 					//concat(whichList, secondList);
 				}
+				break;
 			default:
 				done = 1;
+				
 		}
 
 
-
-		//Change later
-		done = 1;
 	}
 }
