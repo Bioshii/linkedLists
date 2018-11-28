@@ -36,7 +36,7 @@ void display(struct node *data) {
 	struct node *temp = data;
 
 	switch(temp->dataType) {
-		case is_int: printf("%d", temp->data.n); break;
+		case is_int: printf("%d", temp->data.i); break;
 		case is_double: printf("%.2f", temp->data.d); break;
 		case is_string: printf("%s", temp->data.s); break;
 		case is_struct: displayList(temp); break;
@@ -79,6 +79,8 @@ void getElemAtPos(struct node *head, int pos) {
 	printf("\n");
 	
 }
+
+
 
 void insert(struct node **head, int pos, char value[]) {
 	struct node *temp = malloc(sizeof(struct node));
@@ -185,6 +187,54 @@ int validPosition(int userChoice, int whichList, struct node *head) {
 	return 1;
 }
 
+int compareNodes(struct node *node1, struct node *node2) {
+	// Handle potential structures
+	if (node1->dataType == is_struct || node2->dataType == is_struct) {
+
+		if (node1->dataType == is_struct && node2->dataType == is_struct)
+			compareNodes(node1->data.n, node2->data.n);		
+		else if (node1->dataType == is_struct)
+			return 1;
+		else if (node2->dataType == is_struct)
+			return -1;
+		else
+			return 0;
+		
+	// Convert everything to string then use string compare
+	} else {
+		int buffSize = 20;
+		int buffSize2 = 20;
+		char *tempStr = malloc(buffSize);
+		char *tempStr2 = malloc(buffSize); 
+		display(node1);
+		display(node2);
+
+		switch (node1->dataType) {
+			case is_int: snprintf(tempStr, buffSize, "%d", node1->data.i); break;
+			case is_double: snprintf(tempStr, buffSize, "%.4lf", node1->data.d); break;
+			default: strcpy(tempStr, node1->data.s);
+		}
+
+		switch (node2->dataType) {
+			case is_int: snprintf(tempStr, buffSize2, "%d", node2->data.i);
+			case is_double: snprintf(tempStr, buffSize2, "%.4lf", node2->data.d);
+			default: strcpy(tempStr2, node2->data.s);
+		}
+
+		printf("Goign to compare %s and %s", tempStr, tempStr2);
+
+		if (strcmp(tempStr, tempStr2) < 0)
+			return -5;
+		else if (strcmp(tempStr, tempStr2) == 0)
+			return 0;
+		else
+			return 6;
+
+		free(tempStr);
+		free(tempStr2);
+	}
+}
+
 void main() {
 	printf("Welcome to an List Simulator!\n");
 	printf("You will be able to make, modify, and destroy up to 5 lists!\n");
@@ -270,6 +320,7 @@ void main() {
 		int concatOpt;
 		char value[100];
 		int listSize;
+		int currIndex;
 		struct node *curr = malloc(sizeof(struct node));
 		struct node *thisList = malloc(sizeof(struct node));
 		struct node *mySize = malloc(sizeof(struct node));
@@ -409,37 +460,59 @@ void main() {
 				free(curr);
 				printf("Deleted!\n");
 				break;
-			/*
 			case 8:
 				curr = getNode((&headsOfLists), whichList); 
 				thisList = curr->data.n;
 				headNode = getNode((&thisList), 0);
-				struct node *tempSearchMin = headNode;
-				char min[100] = headNode->data;	
 
-				if (headNode->initialized) {
+				struct node *tempSearchMin = headNode->next;
+				struct node *currentMin = headNode;
+
+				while (tempSearchMin->initialized) {
+					printf("CompareNodes: %d\n", compareNodes(tempSearchMin, currentMin));
+					printf("TempSearchMin: ");
+					display(tempSearchMin);
+					printf("\n");
+					if (compareNodes(tempSearchMin, currentMin) < 0) {
+						printf("Switch\n");
+						currentMin = tempSearchMin;
+					}
+						
 					tempSearchMin = tempSearchMin->next;
-					if (tempSearchMin < min)
-						min = tempSearchMin->next;
 				}
 
-				printf("Minium Value in List is: %s", min);
+
+
+				printf("Minium Value in List is: ");
+				display(currentMin);
+				printf("\n");
+
 				break;
 			case 9:
 				curr = getNode((&headsOfLists), whichList); 
 				thisList = curr->data.n;
 				headNode = getNode((&thisList), 0);
-				struct node *tempSearchMax = headNode;
-				char max[100] = headNode->data;	
 
-				if (headNode->initialized) {
+				struct node *tempSearchMax = headNode->next;
+				struct node *currentMax = headNode;
+
+				while (tempSearchMax->initialized) {
+					printf("CompareNodes: %d\n", compareNodes(tempSearchMax, currentMax));
+					if (compareNodes(tempSearchMax, currentMax) > 0) {
+						currentMax = tempSearchMax;
+					}
+						
 					tempSearchMax = tempSearchMax->next;
-					if (tempSearchMax > max)
-						max = tempSearchMax->next;
 				}
 
-				printf("Maximum Value in List is: %s", max);
+
+
+				printf("Maxiuimum Value in List is: ");
+				display(currentMax);
+				printf("\n");
+
 				break;
+			/*
 			case 10:
 				printf("Which list would you like to add concatenate to this current list: ");
 				scanf("%d", &whichList);
