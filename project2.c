@@ -30,6 +30,16 @@ struct node {
 
 void display(struct node *data);
 void displayList(struct node *head);
+struct node *getNode(struct node **head, int pos);
+void getElemAtPos(struct node *head, int pos);
+void insert(struct node **head, int pos, char value[]);
+void modify(struct node *head, int pos, char value[]);
+int validList(int whichList, int amountOfLists);
+int validPosition(int userChoice, int whichList, struct node *head);
+int compareNodes(struct node **node1, struct node **node2);
+int getListSize(struct node *sizes, int whichList);
+void sort(struct node **head, int listSize);
+void getStr(char *tempStr, struct node *node);
 
 
 void display(struct node *data) {
@@ -77,7 +87,6 @@ void getElemAtPos(struct node *head, int pos) {
 	printf("Element at position %d is: ", pos);
 	display(curr);
 	printf("\n");
-	
 }
 
 
@@ -86,11 +95,9 @@ void insert(struct node **head, int pos, char value[]) {
 	struct node *temp = malloc(sizeof(struct node));
 	temp->initialized = 1;
 
-	//char s[MAX_INPUT] = "";
 	double d;
 	int i;
 	double precision = 1e-12; // Precision for which to check for int
-	
 	
 	// Check for integers
 	if (sscanf(value, "%lf", &d) == 1) {
@@ -116,9 +123,8 @@ void insert(struct node **head, int pos, char value[]) {
 	struct node *previous = malloc(sizeof(struct node));
 	previous = (*head);
 
-	for (int i = 0; i < pos-1; i++) {
+	for (int i = 0; i < pos-1; i++)
 		previous = previous->next;
-	}
 
 	if (pos == 0 && (*head)->initialized == 0) {
 		(*head) = temp;
@@ -130,24 +136,17 @@ void insert(struct node **head, int pos, char value[]) {
 		temp->next = previous->next;
 		previous->next = temp;
 	}
-
-	
 }
 
 void modify(struct node *head, int pos, char value[]) {
-	//char s[MAX_INPUT] = "";
 	double d;
 	int i;
 	double precision = 1e-12; // Precision for which to check for int
-
-	
 	struct node *temp = getNode((&head), pos); 
-
 	
 	// Check for integers
 	if (sscanf(value, "%lf", &d) == 1) {
 		int i = (int)d; //Cast to int		
-
 		// fabs for absolute value
 		if (fabs(d - i) / d > precision) {
 			temp->dataType = is_double;
@@ -163,8 +162,6 @@ void modify(struct node *head, int pos, char value[]) {
 		temp->dataType = is_string;
 		strcpy(temp->data.s, value);
 	}
-
-		
 }
 
 int validList(int whichList, int amountOfLists) {
@@ -197,29 +194,11 @@ int compareNodes(struct node **node1, struct node **node2) {
 	// Convert everything to string then use string compare
 	} else if ((*node1)->dataType == is_string || (*node2)->dataType == is_string) {
 		int buffSize = 50;
-		int buffSize2 = 50;
 		char *tempStr = malloc(buffSize);
-		char *tempStr2 = malloc(buffSize2); 
+		char *tempStr2 = malloc(buffSize); 
 
-		switch ((*node1)->dataType) {
-			case is_int: snprintf(tempStr, buffSize, "%d", (*node1)->data.i); break;
-			case is_double: snprintf(tempStr, buffSize, "%.4lf", (*node1)->data.d); break;
-			default: strcpy(tempStr, (*node1)->data.s);
-		}
-
-		switch ((*node2)->dataType) {
-			case is_int: snprintf(tempStr, buffSize2, "%d", (*node2)->data.i); break;
-			case is_double: snprintf(tempStr, buffSize2, "%.4lf", (*node2)->data.d); break;
-			default: strcpy(tempStr2, (*node2)->data.s);
-		}
-
-		snprintf(tempStr, buffSize, "%d", (*node1)->data.i);
-		snprintf(tempStr2, buffSize2, "%d", (*node2)->data.i);
-
-
-
-
-
+		getStr(tempStr, (*node1));
+		getStr(tempStr, (*node2));
 		int gotCompared = strcmp(tempStr, tempStr2);
 
 		free(tempStr);
@@ -231,7 +210,6 @@ int compareNodes(struct node **node1, struct node **node2) {
 			return 1;
 		else
 			return 0;
-
 	} else {
 		double d1 = 0.0;
 		double d2 = 0.0;
@@ -256,15 +234,62 @@ int compareNodes(struct node **node1, struct node **node2) {
 
 }
 
+int getListSize(struct node *sizes, int whichList) {
+	struct node *mySize = getNode((&sizes), whichList);
+	int listSize= mySize->data.i;
+	free(mySize);
+	return listSize;
+}
+
+void sort(struct node **head, int listSize) {
+
+
+	int buffSize = 50;
+	char *tempStr = malloc(buffSize);
+	char *tempStr2 = malloc(buffSize);
+
+
+	int j;
+	for (int i = 1; i < listSize; i++) {
+		j = i -1;
+
+		struct node *compareTo = getNode((head), i);
+		getStr(tempStr2, compareTo);
+
+		int comparingValueIndex = i - 1;
+		struct node *currentNode = getNode((head), comparingValueIndex);
+
+		while (comparingValueIndex > -1 && (compareNodes((&currentNode), (&compareTo))) > 0) {
+			struct node *node1 = getNode((head), comparingValueIndex);
+			getStr(tempStr, node1);
+			modify((*head), comparingValueIndex + 1, tempStr);
+			free(tempStr); //free(node1); free(currentNode);
+			currentNode = getNode((head), --comparingValueIndex);
+		}
+
+		getStr(tempStr, compareTo);
+		modify((*head), comparingValueIndex + 1, tempStr2);
+		free(tempStr2);
+	}
+}
+
+void getStr(char *tempStr, struct node *node) {
+	int buffSize = 50;
+	switch (node->dataType) {
+		case is_int: snprintf(tempStr, buffSize, "%d", (node)->data.i); break;
+		case is_double: snprintf(tempStr, buffSize, "%.4lf", (node)->data.d); break;
+		default: strcpy(tempStr, (node)->data.s);
+	}
+}
+
 void main() {
 	printf("Welcome to an List Simulator!\n");
 	printf("You will be able to make, modify, and destroy up to 5 lists!\n");
-
-
-	// LInked list of likned lists
 	
+	// IF the user is done using me
 	int done = 0;
 
+	// LInked list of likned lists
 	// Lists of all potential lists
 	struct node *headsOfLists = malloc(sizeof(struct node));
 	headsOfLists->initialized = 0;
@@ -272,9 +297,6 @@ void main() {
 	headsOfLists->next->initialized = 0;
 	headsOfLists->next->dataType = is_struct;
 
-	//headsOfLists->dataType = is_struct;
-	
-	
 	// Size of each list of each array
 	struct node *sizes = malloc(sizeof(struct node));
 	sizes->initialized = 0;
@@ -338,30 +360,20 @@ void main() {
 		scanf("%d", &userChoice);
 
 		int position;
-		int secondList;
 		int concatOpt;
 		char value[100];
-		int listSize;
-		int currIndex;
-		char temperValue[40];
 		int buffSize = 50;
-		int buffSize2 = 50;
 		char *tempStr = malloc(buffSize);
-		char *tempStr2 = malloc(buffSize2); 
-		struct node *curr = malloc(sizeof(struct node));
-		struct node *thisList = malloc(sizeof(struct node));
+		char *tempStr2 = malloc(buffSize); 
 		struct node *mySize = malloc(sizeof(struct node));
-		struct node *previousNode = malloc(sizeof(struct node));
-		struct node *newNode = malloc(sizeof(struct node));
-		struct node *headNode = malloc(sizeof(struct node));
-		struct node *myNewList = malloc(sizeof(struct node));
 		struct node *node1 = malloc(sizeof(struct node));
 		struct node *node2 = malloc(sizeof(struct node));
-		struct node *tempSearchMax = headNode->next;
-		struct node *currentMax = headNode;
+		struct node *curr = getNode((&headsOfLists), whichList); 
+		struct node *thisList = curr->data.n;
+		struct node *headNode= getNode((&thisList), 0);
 
 		switch(userChoice) {
-			case 1:
+			case 1: {
 				while (getchar() != '\n');
 				printf("To create a new list, you have to provide data for the first element: ");
 				fgets(value, 100, stdin);
@@ -400,13 +412,9 @@ void main() {
 
 				printf("You have successfully created a new list! You can refer to this list as \"l%d\"\n", ++amountOfLists);
 				break;
-			case 2:
+			} case 2: {
 				printf("Which position would you like to sees element: ");
 				scanf("%d", &position);
-
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-
 				// Check if that position has actually been occupied
 				if (!validPosition(position, whichList, sizes)) { 
 					printf("Position has not been occupied yet!\n");
@@ -414,13 +422,9 @@ void main() {
 					getElemAtPos(thisList, position);
 				}
 				break;
-			case 3:
+			} case 3: {
 				printf("Which position would you like to modify: ");
 				scanf("%d", &position);
-
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-
 				// Check if that position has actually been occupied
 				if (!validPosition(position, whichList, sizes)) { 
 					printf("Position has not been occupied yet!\n");
@@ -439,39 +443,25 @@ void main() {
 					modify(thisList, position, value);
 				}
 				break;
-			case 4:
+			} case 4: {
 				while (getchar() != '\n');
 				printf("What value would you like to add: ");
 				fgets(value, 100, stdin);
 
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-
-				headNode= getNode((&thisList), 0);
-
 				mySize = getNode((&sizes), whichList);
-
 				insert(&headNode, mySize->data.i, value);	
-
 				mySize->data.i = mySize->data.i + 1;
-
 				break;
-			case 5:
-				mySize = getNode((&sizes), whichList);
-				listSize = mySize->data.i; 
-				printf("The length of this list (%d) is %d\n", (whichList+1), listSize);
+			} case 5: {
+				printf("The length of this list (%d) is %d\n", (whichList+1), getListSize((sizes), whichList));
 				break;
-			case 6:
+			} case 6: {
 				while (getchar() != '\n');
 				printf("What value would you like to add: ");
 				fgets(value, 100, stdin);
 
 				printf("Which position would you like to add it to: ");
 				scanf("%d", &position);
-
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-				headNode= getNode((&thisList), 0);
 
 				if (position == 0) {
 					switch (headNode->dataType) {
@@ -487,25 +477,17 @@ void main() {
 				}
 				
 				mySize = getNode((&sizes), whichList);
-
 				insert(&headNode, mySize->data.i, value);	
-
 				mySize->data.i = mySize->data.i + 1;
-
 				break;
-			case 7:
-				curr = getNode((&headsOfLists), whichList);
+			} case 7: {
 				curr->initialized = 0;
 				curr->data.n->initialized = 0;
 				curr->data.n = NULL;
 				free(curr);
 				printf("Deleted!\n");
 				break;
-			case 8:
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-				headNode = getNode((&thisList), 0);
-
+			} case 8: {
 				struct node *tempSearchMin = headNode->next;
 				struct node *currentMin = headNode;
 
@@ -524,13 +506,9 @@ void main() {
 				printf("\n");
 
 				break;
-			case 9:
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-				headNode = getNode((&thisList), 0);
-
-			   	tempSearchMax = headNode->next;
-				currentMax = headNode;
+			} case 9: {
+			   	struct node *tempSearchMax = headNode->next;
+				struct node *currentMax = headNode;
 
 				while (tempSearchMax->initialized) {
 					if (compareNodes(&tempSearchMax, &currentMax) > 0) {
@@ -547,17 +525,10 @@ void main() {
 				printf("\n");
 
 				break;
-			case 10:
+			} case 10: {
 				printf("Which list would you like to add concatenate to this current list: ");
 				scanf("%d", &concatOpt);
-
 				--concatOpt;
-
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-				headNode = getNode((&thisList), 0);
-
-				// Node that has the head of the list
 
 				while (headNode->next->initialized)
 					headNode = headNode->next;
@@ -575,78 +546,30 @@ void main() {
 
 				printf("List %d has successfully been concatenated to list %d, and you can refer to it as list %d.\n", ++concatOpt, ++whichList, ++whichList);
 				break;
-			case 11:
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-				headNode = getNode((&thisList), 0);
-
+			} case 11: {
 				int i = 0; int j = 0;
 				mySize = getNode((&sizes), whichList);
 				j = mySize->data.i - 1; 
 
 				while (i < j) {
-					printf("Loop\n");
 					node1 = getNode((&headNode), i);
-					switch (node1->dataType) {
-						case is_int: snprintf(tempStr, buffSize, "%d", (node1)->data.i); break;
-						case is_double: snprintf(tempStr, buffSize, "%.4lf", (node1)->data.d); break;
-						default: strcpy(tempStr, (node1)->data.s);
-					}
-
 					node2 = getNode((&headNode), j);
-					switch ((node2)->dataType) {
-						case is_int: snprintf(tempStr, buffSize2, "%d", (node2)->data.i); break;
-						case is_double: snprintf(tempStr, buffSize2, "%.4lf", (node2)->data.d); break;
-						default: strcpy(tempStr2, (node2)->data.s);
-					}
 
-					snprintf(tempStr, buffSize, "%d", (node1)->data.i);
-					snprintf(tempStr2, buffSize2, "%d", (node2)->data.i);
-					
+					getStr(tempStr, node1);
+					getStr(tempStr2, node2);
+
 					modify(headNode, i, tempStr2);
 					modify(headNode, j, tempStr);
+
 					++i;--j;
 				}
 				break;
-			case 12:
-				curr = getNode((&headsOfLists), whichList); 
-				thisList = curr->data.n;
-				headNode = getNode((&thisList), 0);
-
-				mySize = getNode((&sizes), whichList);
-				listSize = mySize->data.i; 
-
-				for (int i = 1; i < listSize; i++) {
-					int movingValueIndex = i;
-					int comparingValueIndex = i - 1;
-
-					tempSearchMax = getNode((&thisList), movingValueIndex);
-					currentMax = getNode((&thisList), comparingValueIndex);
-
-					while (comparingValueIndex > -1 && ((compareNodes((&tempSearchMax), (&currentMax))) < 0)) {
-						node1 = getNode((&headNode), comparingValueIndex);
-						switch (node1->dataType) {
-							case is_int: snprintf(tempStr, buffSize, "%d", (node1)->data.i); break;
-							case is_double: snprintf(tempStr, buffSize, "%.4lf", (node1)->data.d); break;
-							default: strcpy(tempStr, (node1)->data.s);
-						}
-						modify(headNode, comparingValueIndex + 1, tempStr);
-						currentMax = getNode((&thisList), comparingValueIndex--);
-					}
-
-					switch (tempSearchMax->dataType) {
-						case is_int: snprintf(tempStr, buffSize, "%d", (tempSearchMax)->data.i); break;
-						case is_double: snprintf(tempStr, buffSize, "%.4lf", (tempSearchMax)->data.d); break;
-						default: strcpy(tempStr, (tempSearchMax)->data.s);
-					}
-					modify(headNode, comparingValueIndex + 1, tempStr);
-				}
+			} case 12: {
+				sort(&headNode, getListSize((sizes), whichList));
 				break;
-			default:
+			} default:
 				done = 1;
-				
+				printf("Thanks for using me! Cya!\n");
 		}
-
-
 	}
 }
